@@ -19,7 +19,7 @@ import java.io.IOException;
 		 URL url = new URL(urlBuilder.toString()); 
 		 HttpURLConnection conn = (HttpURLConnection) 
 		 url.openConnection(); 
-		 conn.setRequestMethod("GET"); 
+		 conn.setRequestMethod("GET");
 		 conn.setRequestProperty("Content-type", "application/json");
 		 
 		 System.out.println("Response code: " + conn.getResponseCode()); 
