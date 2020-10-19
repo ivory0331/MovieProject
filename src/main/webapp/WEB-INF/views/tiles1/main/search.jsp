@@ -13,17 +13,19 @@
 			  data: { "keyword" : key },
 			  dataType:"JSON",
 			  success:function(json){
-				  console.log("실행");
-				  console.log(json);
-				  
+				//  console.log("실행");
+				//  console.log(json);
+				  var html = "";
 				  $.each(json.items,function(i,item){
-					  console.log(item.title);
-					  $("#mvResult").append(
-					  	"<tr>"+"<td width='100'><img src='"+item.image+"'></td>"+
-					  	"<td width='300'>"+item.title+"</td>"+
-					  	"<td>"+item.director+"</td></tr>"
-					  );
+					//  console.log(item.title);
+					html +="<tr>";
+					html +="<td width='100'><img src='"+item.image+"'></td>"+
+					  	   "<td width='300'>"+item.title+"</td>"+
+					  	   "<td>"+item.director+"</td>";
+					html += "</tr>";
 				  });
+
+				$("#mvResult").html(html);
 			  },
 			  error: function(request, status, error){
 					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);

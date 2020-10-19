@@ -7,6 +7,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<style type="text/css">
+	#mycontent{
+		max-width: 1080px;
+  		margin: 0 auto;
+  		border: solid 0px red;
+	}
+</style>
 <meta charset="UTF-8">
 <title>I like movie page</title>
 </head>

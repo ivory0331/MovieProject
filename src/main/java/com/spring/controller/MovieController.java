@@ -6,15 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.model.MemberVO;
 import com.spring.service.InterMovieService;
 
 //=== #30. 컨트롤러 선언 ===
@@ -73,11 +78,152 @@ public class MovieController {
 	}
 	
 	// 로그인 페이지
-	@RequestMapping(value="/login.mv")
+	@RequestMapping(value="/login/login.mv")
 	public ModelAndView login(ModelAndView mav) {
 		
 		mav.setViewName("login/loginform.tiles1");
 		// 		/WEB-INF/views/tiles1/login/loginform.jsp 파일을 생성한다.
+		return mav;
+	}
+	
+	// 로그인 페이지
+	@RequestMapping(value="/login/joinmember.mv")
+	public ModelAndView joinmember(ModelAndView mav) {
+		
+		mav.setViewName("login/joinmember.tiles1");
+		
+		return mav;
+	}
+	
+	// 로그인 페이지
+	@ResponseBody
+	@RequestMapping(value="/login/idDuplicateCheck.mv", produces="text/plain; charset=UTF-8")
+	public String idDuplicateCheck(HttpServletRequest request) {
+		
+		String userid = request.getParameter("userid");
+		String n = service.idDuplicateCheck(userid);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString();
+	}
+	
+	// 회원가입하기
+	@RequestMapping(value="/login/loginEnd.mv", method= {RequestMethod.POST})
+	public String loginEnd(HttpServletRequest request, MemberVO mvo) {
+		String msg = "";
+		String loc = "";
+		
+		int n = service.registerMember(mvo);
+
+		if(n==1) {
+			msg = "회원가입  성공";
+			loc = "login.mv";	// 자바스크립트를 이용한 이전페이지로 이동하는 것이다.
+			
+			request.setAttribute("msg", msg);
+			request.setAttribute("loc", loc);
+			
+			return "msg"; //msg.jsp 페이지로 이동
+		}
+		else {
+			msg = "회원가입  실패";
+			loc = "javascript:history.back()";	// 자바스크립트를 이용한 이전페이지로 이동하는 것이다.
+			
+			request.setAttribute("msg", msg);
+			request.setAttribute("loc", loc);
+			
+			return "msg"; //msg.jsp 페이지로 이동
+		}
+		
+	}
+	
+	// 로그인 하기
+	@RequestMapping(value="/loginEnd.mv" , method= {RequestMethod.POST})
+	public ModelAndView loginEnd(HttpServletRequest request, ModelAndView mav) {
+		
+		String userid = request.getParameter("userid");
+		String pwd = request.getParameter("pwd");
+		
+		HashMap<String, String> paraMap = new HashMap<>();
+		paraMap.put("userid", userid);
+		paraMap.put("pwd", pwd);
+		
+		MemberVO loginuser = service.getLoginMember(paraMap);
+		
+		HttpSession session = request.getSession();
+		
+		if(loginuser == null) {
+			String msg = "아이디 또는 암호가 틀립니다.";
+			String loc = "javascript:history.back()";
+			
+			mav.addObject("msg", msg);
+			mav.addObject("loc", loc);
+			
+			mav.setViewName("msg");
+			//   /WEB-INF/views/msg.jsp 파일을 생성한다.
+		}
+		
+		else {
+			if(loginuser.isIdleStatus()) { 
+				// 로그인을 한지 1년이 지나서 휴면상태에 빠진 경우
+				String msg = "로그인을 하지 1년이 지나서 휴면상태에 빠졌습니다. 관리자에게 문의 바랍니다.";
+				String loc = "javascript:history.back()";
+				
+				mav.addObject("msg", msg);
+				mav.addObject("loc", loc);
+				
+				mav.setViewName("msg");
+			}
+			else {
+				if(loginuser.isRequirePwdChange()) { 
+					// 암호를 최근 3개월 동안 변경하지 않은 경우
+					session.setAttribute("loginuser", loginuser);
+					
+					String msg = "암호를 최근 3개월동안 변경하지 않으셨습니다. 암호를 변경을 위해 나의정보 페이지로 이동합니다.";
+					String loc = request.getContextPath()+"/myinfo.mv";
+								// 		/board/myinfo.action
+					
+					mav.addObject("msg", msg);
+					mav.addObject("loc", loc);
+					
+					mav.setViewName("msg");
+				}
+				
+				else {
+					// 아무런 이상없이 로그인 하는 경우
+					session.setAttribute("loginuser", loginuser);
+					
+					if(session.getAttribute("gobackURL") != null) {
+						// 세션에 저장된 돌아갈 페이지 주소(gobackURL)가 있다라면
+						String gobackURL = (String) session.getAttribute("gobackURL");
+						mav.addObject("gobackURL", gobackURL); // request 영역에 저장시키는 것이다.
+						
+						session.removeAttribute("gobackURL"); // 중요!!!
+					}
+					
+					mav.setViewName("login/loginEnd.tiles1");
+					// 				/WEB-INF/views/tiles1/login/loginEnd.jsp 파일을 생성한다.
+				}
+			}
+		}
+		return mav;
+	}
+	
+	// 로그아웃하기
+	@RequestMapping(value="/login/logout.mv")
+	public ModelAndView logout(HttpServletRequest request, ModelAndView mav) {
+		HttpSession session = request.getSession();
+		session.invalidate();
+		
+		String msg = "로그아웃 되었습니다.";
+		String loc = request.getContextPath()+"/index.mv";
+		
+		mav.addObject("msg", msg);
+		mav.addObject("loc", loc);
+		
+		mav.setViewName("msg");
+		
 		return mav;
 	}
 	

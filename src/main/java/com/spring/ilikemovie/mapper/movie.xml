@@ -5,7 +5,31 @@
 
 <!-- ==== #29. 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="movie">
-
-
+	
+	<select id="idDuplicateCheck" parameterType="String" resultType="String">
+      select userid
+      from mv_member
+      where userid = #{userid}
+    </select>
+	
+	<insert id="registerMember" parameterType="com.spring.model.MemberVO">
+		insert into mv_member(userid, name, pwd, identity, email, mobile, point,
+		 		WriterLevel, registerday, status, last_login_date,
+		 		pwd_change_date, nickname, bank_account, bank_number)
+    	values(#{userid},#{name},#{pwd}, default ,#{email},#{mobile},default, 
+    			default, default, default, default,
+    	 		default , #{nickname} , #{bank_account}, #{bank_number})
+	</insert>
+	
+	<!-- === #47. 로그인 처리하기 === -->
+	<select id="getLoginMember" parameterType="HashMap" resultType="com.spring.model.MemberVO">
+		select userid, name
+         	 , trunc( months_between(sysdate, pwd_change_date) ) AS pwdchangegap
+         	 , trunc( months_between(sysdate, last_login_date) ) AS lastlogindategap
+		from mv_member
+		where status = 1 and
+			  userid = #{userid} and
+			  pwd = #{pwd}
+	</select>
 
 </mapper>

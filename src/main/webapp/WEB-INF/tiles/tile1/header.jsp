@@ -60,14 +60,12 @@
 }
 
 .logo:hover{
-   text-decoration: none;
-   color:black;
    cursor: pointer;
 }
 
 .logo{
-   width: 250px; 
-   margin-left:405px; 
+   width: 290px; 
+   margin-left:380px; 
    height: 75px; 
    display: inline-block;
 }
@@ -128,15 +126,16 @@ a:hover{
 <div style="width:1080px; height: 200px; margin: 0 auto; padding-top:10px;"><br>
 
 <!-- header 중앙에 표시되는 로고  -->
-	<img class="logo" onclick="javascript:location.href='<%=ctxPath%>/index.mv'" src="<c:url value="/resources/images/index/logo.png" />">
+	<img class="logo" onclick="javascript:location.href='<%=ctxPath%>/index.mv'" src="<c:url value="/resources/images/logo.PNG" />">
 	
 <!-- 우측상단 미니메뉴바  -->
 
 <c:if test="${sessionScope.loginuser != null}">
-	<span class="minimenu"><a class="minim" href="<%=ctxPath%>/login/logout.up"><img  src="<c:url value="/resources/images/index/logout.png" />"><br>로그아웃</a></span>
+	<span class="minimenu"><a class="minim" href="<%=ctxPath%>/login//logout.mv"><img  src="<c:url value="/resources/images/index/logout.png" />"><br>로그아웃</a></span>
+	<span style="color: navy; font-weight: bold; font-size: 10pt;">${sessionScope.loginuser.name}</span> 님 로그인중..
 </c:if>
 <c:if test="${sessionScope.loginuser == null}">
-	<div class="minimenu"><a class="minim" href="<%=ctxPath%>/login/login.up"><img src="<c:url value="/resources/images/index/login.png" />"><br>로그인</a></div>
+	<div class="minimenu"><a class="minim" href="<%=ctxPath%>/login/login.mv"><img src="<c:url value="/resources/images/index/login.png" />"><br>로그인</a></div>
 </c:if>
 <div class="minimenu"><a class="minim" href="<%=ctxPath%>/QnAList.mv"><img style="width: 24px; height: 24px;" src="<c:url value="/resources/images/index/qa3.png" />"><br>Q&A</a></div>
 <c:if test="${sessionScope.loginuser.userid == 'admin'}">
@@ -149,7 +148,7 @@ a:hover{
    <div style="width: 1080px; height:70px; margin: 0 auto; text-align: center; margin-top: 20px; position: relative; z-index:1;" >
       
       <div class="dropdown">
-        <span onclick="javascript:location.href='<%=ctxPath%>/login.mv'">로그인/회원가입</span>
+        <span onclick="javascript:location.href='<%=ctxPath%>/login/login.mv'">로그인/회원가입</span>
       </div>      
       
       <div class="dropdown">
