@@ -176,12 +176,12 @@
 			// 필수항목을 모두 입력했는지
 			var useridVal = $("#userid").val().trim();
 			var nameVal = $("#name").val().trim();
+			var nicknameVal = $("#nickname").val().trim();
 			var pwdcheckVal = $("#pwdcheck").val().trim();
 			var pwdVal = $("#pwd").val().trim();
-			var nameVal = $("#name").val().trim();
 			var mobile = $("#mobile").val().trim();
 			
-			if (useridVal == "" || nameVal == "" || pwdcheckVal == "" || pwdVal == "" || nameVal == "" || mobile == "") {
+			if (useridVal == "" || nameVal == "" || nicknameVal == "" || pwdcheckVal == "" || pwdVal == "" || mobile == "") {
 				alert("필수 항목은 모두 입력해주세요!");
 				return;
 			}
@@ -238,6 +238,7 @@
 				    </div>
 				    
 				    <div class="form-group col-md-4">
+				    <span class="required_red">*</span>
 				      <label for="nickname">닉네임</label>
 				      <input type="text" class="form-control" id="nickname" name="nickname">
 				    </div>
@@ -273,8 +274,8 @@
 				    
 				    
 				    <div class="form-group col-md-2">
-				      <label for="bank_account">게좌 정보</label>
-				      <select id="bank_account" class="form-control" name="bank_account">
+				      <label for="bank_account">계좌 정보</label>
+				      <select id="bank_account" class="form-control" name="bank_name">
 				        <option selected>은행 이름</option>
 				        <option value="기업은행">기업은행</option>
 				        <option value="신한은행">신한은행</option>
@@ -285,7 +286,7 @@
 				    
 				    <div class="form-group col-md-4">
 				      <label for="bank_number">계좌번호</label>
-				      <input type="text" class="form-control" id="bank_number" name="bank_number">
+				      <input type="text" class="form-control" id="bank_number" name="bank_num">
 				    </div>
 				    <!--
 				   	프로필사진 올리기 위한 첨부파일 넣기 

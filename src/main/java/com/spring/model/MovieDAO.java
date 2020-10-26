@@ -1,6 +1,7 @@
 package com.spring.model;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -31,6 +32,24 @@ public class MovieDAO implements InterMovieDAO {
 	public MemberVO getLoginMember(HashMap<String, String> paraMap) {
 		MemberVO loginuser = sqlsession.selectOne("movie.getLoginMember", paraMap);
 		return loginuser;
+	}
+	// 자유게시판 목록 가져오기
+	@Override
+	public List<postVO> getFreeboardList() {
+		List<postVO> freeboardList = sqlsession.selectList("movie.getFreeboardList");
+		return freeboardList;
+	}
+	// 자유게시판 글쓰기
+	@Override
+	public int addfreeboard(postVO postvo) {
+		int n = sqlsession.insert("movie.addfreeboard", postvo);
+		return n;
+	}
+	// 자유게시판 상세보기
+	@Override
+	public postVO getFreeboardView(String post_seq) {
+		postVO freeboardView = sqlsession.selectOne("movie.getFreeboardView", post_seq);
+		return freeboardView;
 	}
 	
 	

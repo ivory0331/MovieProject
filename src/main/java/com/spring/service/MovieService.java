@@ -1,12 +1,12 @@
 package com.spring.service;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.spring.model.InterMovieDAO;
-import com.spring.model.MemberVO;
+import com.spring.model.*;
 
 //=== #31. Service 선언 ===
 @Service
@@ -58,6 +58,24 @@ public class MovieService implements InterMovieService {
 		}
 		
 		return loginuser;
+	}
+	// 자유게시판 목록 가져오기
+	@Override
+	public List<postVO> getFreeboardList() {
+		List<postVO> freeboardList = dao.getFreeboardList();
+		return freeboardList;
+	}
+	// 자유게시판 글쓰기
+	@Override
+	public int addfreeboard(postVO postvo) {
+		int n = dao.addfreeboard(postvo);
+		return n;
+	}
+	// 자유게시판 상세보기
+	@Override
+	public postVO getFreeboardView(String post_seq) {
+		postVO freeboardView = dao.getFreeboardView(post_seq);
+		return freeboardView;
 	}
 	
 	

@@ -159,8 +159,8 @@ a:hover{
         <span>커뮤니티</span>
         <div class="dropdown-content">
         <a class="downmenu" href="<%=ctxPath%>/freeBoardList.mv">자유게시판</a><br>
-        <a href="<%=ctxPath%>/noticeList.mv">공지사항</a><br>
-        <a href="<%=ctxPath%>/QnAList.mv">Q&A</a>
+        <a href="<%=ctxPath%>/QnAList.mv">Q&A</a><br>
+        <a href="<%=ctxPath%>/noticeList.mv">공지사항</a>
         </div>
       </div>
       

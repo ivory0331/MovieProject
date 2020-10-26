@@ -2,24 +2,19 @@ package com.spring.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.stereotype.*;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.spring.model.MemberVO;
+import com.spring.common.FileManager;
+import com.spring.model.*;
 import com.spring.service.InterMovieService;
 
 //=== #30. 컨트롤러 선언 ===
@@ -29,6 +24,10 @@ public class MovieController {
 	
 	@Autowired // Type에 따라 알아서 Bean을 주입해준다.
 	private InterMovieService service;
+	
+	// ===== #150. 파일업로드 및 다운로드를 해주는  FileManager 클래스 의존객체 주입하기(DI:Dependency Injection)  =====
+	@Autowired // Type에 따라 알아서 Bean을 주입해준다.
+	private FileManager fileManager; 
 	
 	// 메인페이지
 	@RequestMapping(value="/index.mv")
@@ -119,7 +118,7 @@ public class MovieController {
 
 		if(n==1) {
 			msg = "회원가입  성공";
-			loc = "login.mv";	// 자바스크립트를 이용한 이전페이지로 이동하는 것이다.
+			loc = "login/login.mv";	// 자바스크립트를 이용한 이전페이지로 이동하는 것이다.
 			
 			request.setAttribute("msg", msg);
 			request.setAttribute("loc", loc);
@@ -231,7 +230,7 @@ public class MovieController {
 	@RequestMapping(value="/spoilerList.mv")
 	public ModelAndView list(ModelAndView mav) {
 		
-		mav.setViewName("spiler/list.tiles1");
+		mav.setViewName("spoiler/list.tiles1");
 		
 		return mav;
 	}
@@ -247,9 +246,62 @@ public class MovieController {
 	
 	// 자유게시판 페이지
 	@RequestMapping(value="/freeBoardList.mv")
-	public ModelAndView freeBoardList(ModelAndView mav) {
+	public ModelAndView freeBoardList(ModelAndView mav, HttpServletRequest request) {
 		
+		List<postVO> freeboardList = null;
+		
+		freeboardList = service.getFreeboardList();
+		
+		mav.addObject("freeboardList",freeboardList);
 		mav.setViewName("board/freeBList.tiles1");
+		
+		return mav;
+	}
+	
+	// 자유게시판 글쓰기
+	@RequestMapping(value="/freeBoardAdd.mv")
+	public ModelAndView requiredLogin_freeBoardAdd(HttpServletRequest request, HttpServletResponse response,ModelAndView mav) {
+		
+		mav.setViewName("board/freeBAdd.tiles1");
+		
+		return mav;
+	}
+	
+	// 자유게시판 글쓰기 요청
+	@RequestMapping(value="/addfreeboardEnd.mv", method= {RequestMethod.POST})
+	public ModelAndView addfreeboard(ModelAndView mav, postVO postvo, HttpServletRequest request) {
+	
+		String msg = "";
+		String loc = "";
+		int n = service.addfreeboard(postvo); // 자유게시판 글쓰기
+		
+		if(n==1){
+			msg = "글이 등록되었습니다:)";
+			loc = request.getContextPath()+"/freeBoardList.mv";	
+
+		}else {
+			msg = "글 등록 실패...:(";
+			loc = "javascript:history.back()";	// 자바스크립트를 이용한 이전페이지로 이동하는 것이다.
+			
+		}
+		request.setAttribute("msg", msg);
+		request.setAttribute("loc", loc);
+		mav.setViewName("msg");
+		
+		return mav;
+	}
+				
+	// 자유게시판 게시판 글 상세보기
+	@RequestMapping(value="/freeboardView.mv")
+	public ModelAndView freeboardview(HttpServletRequest request, ModelAndView mav) {
+		
+		String post_seq = request.getParameter("post_seq");
+		
+		postVO freeboardView = null;
+		freeboardView = service.getFreeboardView(post_seq); // 자유게시판 상세보기
+				
+		mav.addObject("freeboardView", freeboardView);
+		mav.setViewName("board/freeboardView.tiles1");
 		
 		return mav;
 	}
