@@ -13,6 +13,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
 
+import javax.media.jai.JAI;
+import javax.media.jai.RenderedOp;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
@@ -225,7 +227,6 @@ public class FileManager {
 	    return type;
 	}
 	
-	/*
 	// 스마트에디터에서 사진첨부시 이미지의 크기를 구하기 위한 getImageWidth(), getImageHeight() 메소드를 아래와 같이 추가생성함.
 	// 이미지 폭
 	public int getImageWidth(String pathname) {
@@ -264,5 +265,5 @@ public class FileManager {
 		
 	   return height;
 	}
-	*/
+	
 }

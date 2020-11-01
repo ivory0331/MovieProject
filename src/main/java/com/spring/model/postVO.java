@@ -1,5 +1,7 @@
 package com.spring.model;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class postVO {
 
 	private String post_seq;		// 게시글_번호
@@ -22,6 +24,10 @@ public class postVO {
 	private String nextseq;          // 다음글번호
 	private String nextsubject;      // 다음글제목
 	
+	private MultipartFile attach; // form 태그에서 type="file"인 파일을 받아서 저장되는 필드이다. 진짜파일 => WAS(톰캣) 디스크에 저장됨.
+	// !!!!!! MultipartFile attach 는 오라클 데이터베이스 tblBoard 테이블의 컬럼이 아니다.!!!!!!  
+	// /Board/src/main/webapp/WEB-INF/views/tiles1/board/add.jsp 파일에서 input type="file" 인 name 의 이름(attach)과 
+	// 동일해야만 파일첨부가 가능해진다.!!!!
 	
 	public postVO() {}
 
@@ -224,6 +230,15 @@ public class postVO {
 
 	public void setNextsubject(String nextsubject) {
 		this.nextsubject = nextsubject;
+	}
+
+
+	public MultipartFile getAttach() {
+		return attach;
+	}
+	
+	public void setAttach(MultipartFile attach) {
+		this.attach = attach;
 	}
 	
 	

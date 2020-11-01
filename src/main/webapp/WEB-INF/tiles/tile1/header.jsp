@@ -103,7 +103,6 @@ a:hover{
 
 
 </style>
-<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 <script type="text/javascript">
    
    $(document).ready(function(){
@@ -138,42 +137,37 @@ a:hover{
 	<div class="minimenu"><a class="minim" href="<%=ctxPath%>/login/login.mv"><img src="<c:url value="/resources/images/index/login.png" />"><br>로그인</a></div>
 </c:if>
 <div class="minimenu"><a class="minim" href="<%=ctxPath%>/QnAList.mv"><img style="width: 24px; height: 24px;" src="<c:url value="/resources/images/index/qa3.png" />"><br>Q&A</a></div>
-<c:if test="${sessionScope.loginuser.userid == 'admin'}">
+<c:if test="${sessionScope.loginuser.identity == 0}">
 	<span class="minimenu"><a class="minim" href="<%=ctxPath%>/admin.up""><img  src="<c:url value="/resources/images/index/admin.png" />"><br>관리자</a></span>
 </c:if>
 
    <!-- =====================================================================  -->
    
    <!-- 메뉴바가 담겨져 있는 div -->
-   <div style="width: 1080px; height:70px; margin: 0 auto; text-align: center; margin-top: 20px; position: relative; z-index:1;" >
-      
-      <div class="dropdown">
-        <span onclick="javascript:location.href='<%=ctxPath%>/login/login.mv'">로그인/회원가입</span>
-      </div>      
+   <div style="width: 1080px; height:70px; margin: 0 auto; text-align: center; margin-top: 20px; position: relative; z-index:1;" >     
       
       <div class="dropdown">
          <span onclick="javascript:location.href='<%=ctxPath%>/spoilerList.mv'">스포주의 감상문</span> 
       </div>
       
       <div class="dropdown">
-        <span>커뮤니티</span>
-        <div class="dropdown-content">
-        <a class="downmenu" href="<%=ctxPath%>/freeBoardList.mv">자유게시판</a><br>
-        <a href="<%=ctxPath%>/QnAList.mv">Q&A</a><br>
-        <a href="<%=ctxPath%>/noticeList.mv">공지사항</a>
-        </div>
-      </div>
+        <span onclick="javascript:location.href='<%=ctxPath%>/QnAList.mv'">Q&A</span>
+      </div> 
       
-      <div class="dropdown" style="border-right: solid 1px #ccc;">
-      	<c:if test="${empty sessionScope.loginuser}">
-           <span onclick="javascript:location.href='<%=ctxPath%>/mypageMain.mv'">마이페이지</span>
-           </c:if>
-      	
-      	<c:if test="${sessionScope.loginuser.identity == 1}">
+      <div class="dropdown">
+        <span onclick="javascript:location.href='<%=ctxPath%>/freeBoardList.mv'">자유게시판</span>
+      </div> 
+      
+      <div class="dropdown">
+        <span onclick="javascript:location.href='<%=ctxPath%>/noticeList.mv'">공지사항</span>
+      </div> 
+      
+      <c:if test="${sessionScope.loginuser.identity == 1}">
+      	<div class="dropdown">
            <span onclick="javascript:location.href='<%=ctxPath%>/mypageMain.up'">마이페이지</span>
-        </c:if>
-                
-       </div>
+        </div>
+       </c:if>
+       
     </div>
       
    </div>  

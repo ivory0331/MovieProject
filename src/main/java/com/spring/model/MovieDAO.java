@@ -35,8 +35,8 @@ public class MovieDAO implements InterMovieDAO {
 	}
 	// 자유게시판 목록 가져오기
 	@Override
-	public List<postVO> getFreeboardList() {
-		List<postVO> freeboardList = sqlsession.selectList("movie.getFreeboardList");
+	public List<postVO> getFreeboardList(HashMap<String, String> paraMap) {
+		List<postVO> freeboardList = sqlsession.selectList("movie.getFreeboardList", paraMap);
 		return freeboardList;
 	}
 	// 자유게시판 글쓰기
@@ -47,9 +47,20 @@ public class MovieDAO implements InterMovieDAO {
 	}
 	// 자유게시판 상세보기
 	@Override
-	public postVO getFreeboardView(String post_seq) {
-		postVO freeboardView = sqlsession.selectOne("movie.getFreeboardView", post_seq);
+	public postVO getFreeboardView(HashMap<String, String> paraMap) {
+		postVO freeboardView = sqlsession.selectOne("movie.getFreeboardView", paraMap);
 		return freeboardView;
+	}
+	// 자유게시판 총 게시물 개수
+	@Override
+	public int getFreeTotalCount(HashMap<String, String> paraMap) {
+		int freeTotalCount = sqlsession.selectOne("movie.getFreeTotalCount", paraMap);
+		return freeTotalCount;
+	}
+	// 조회수 1 증가시키기
+	@Override
+	public void addViewCount(HashMap<String, String> paraMap) {
+		sqlsession.update("movie.addViewCnt", paraMap);
 	}
 	
 	

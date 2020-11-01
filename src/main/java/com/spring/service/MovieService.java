@@ -61,8 +61,8 @@ public class MovieService implements InterMovieService {
 	}
 	// 자유게시판 목록 가져오기
 	@Override
-	public List<postVO> getFreeboardList() {
-		List<postVO> freeboardList = dao.getFreeboardList();
+	public List<postVO> getFreeboardList(HashMap<String, String> paraMap) {
+		List<postVO> freeboardList = dao.getFreeboardList(paraMap);
 		return freeboardList;
 	}
 	// 자유게시판 글쓰기
@@ -73,13 +73,25 @@ public class MovieService implements InterMovieService {
 	}
 	// 자유게시판 상세보기
 	@Override
-	public postVO getFreeboardView(String post_seq) {
-		postVO freeboardView = dao.getFreeboardView(post_seq);
+	public postVO getFreeboardView(HashMap<String, String> paraMap) {
+		postVO freeboardView = dao.getFreeboardView(paraMap);
 		return freeboardView;
 	}
+	// 자유게시판 총 게시물 개수
+	@Override
+	public int getFreeTotalCount(HashMap<String, String> paraMap) {
+		int freeTotalCount = dao.getFreeTotalCount(paraMap);
+		return freeTotalCount;
+	}
 	
-	
-	
+	// 자유게시판 상세보기+조회수
+	@Override
+	public postVO getFreeboardView_cnt(HashMap<String, String> paraMap) {
+		dao.addViewCount(paraMap);
+		postVO freeboardvo = dao.getFreeboardView(paraMap);
+		return freeboardvo;
+	}
+
 	
 	
 }

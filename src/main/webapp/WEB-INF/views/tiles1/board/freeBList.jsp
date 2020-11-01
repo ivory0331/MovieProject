@@ -21,32 +21,47 @@
 
 	$(document).ready(function(){
 	
+		// 검색어를 입력 후 엔터를 하는 경우
+		$("#searchWord").keydown(function(event) {
+			 if(event.keyCode == 13) {
+				 // 엔터를 했을 경우
+				 goSearch();
+			 }
+		 });
+		
+		// 검색시 검색조건 및 검색어 값 유지시키기 
+		if(${paraMap != null}) {
+			$("#searchType").val("${paraMap.searchType}");
+			$("#searchWord").val("${paraMap.searchWord}");
+		}
+		
+		
 	});// end of $(document).ready() -------------------------------------
 	
 
 	// 글을 보여주는 함수
 	function goView(post_seq){
 		
-		location.href="<%=ctxPath%>/freeboardView.mv?post_seq="+post_seq;
+		<%-- location.href="<%=ctxPath%>/freeboardView.mv?post_seq="+post_seq; --%>
 		
-		 /* var frm = document.goViewFrm;
+		 var frm = document.goViewFrm;
 		 frm.post_seq.value = post_seq;
 		 
 			frm.method = "GET";
 			frm.action = "freeboardView.mv";
-			frm.submit(); */
+			frm.submit(); 
 	     
 	 }// end of goView(seq) ------------------------------------
 	
-	 <%-- 
+ 
 	// 글을 검색하는 함수
 	function goSearch() {
 			var frm = document.searchFrm;
 			frm.method = "GET";
-			frm.action = "<%= request.getContextPath()%>/freeboard.up";
+			frm.action = "<%= request.getContextPath()%>/freeBoardList.mv";
 			frm.submit();
 	}// end of function goSearch()-------------------------
-	  --%>
+
 	
 	
 </script>
@@ -84,10 +99,10 @@
 		</table>
 	</div>
 		
-		<%-- <!-- 페이지바  -->
+		<!-- 페이지바  -->
 		<div align="center" style="width: 60%; margin: 20px auto;">
 			${pageBar}
-		</div> --%>
+		</div> 
 				
 	<div>
 	<c:if test="${not empty sessionScope.loginuser.userid}">
@@ -96,11 +111,11 @@
 		</span>	
 	</c:if>
 	</div>
-	<%-- 
+	 
 	<form name="searchFrm" style="margin-top: 20px; margin-left: 40px;">
 		<select name="searchType" id="searchType" style="height: 26px;">
 			<option value="title">글제목</option>
-			<option value="name">글쓴이</option>
+			<option value="nickname">작성자</option>
 		</select>
 		<input type="text" name="searchWord" id="searchWord" size="40" autocomplete="off" /> 
 		<span onclick="goSearch()" style="border: solid 1px #f2f2f2; background-color: #f2f2f2; display:inline-block; width:50px; height: 25px; text-align: center; line-height: 25px; border-radius: 10px;">검색</span>
@@ -113,4 +128,4 @@
 		<input type="hidden" name="post_seq"/>
 		<input type="hidden" name="gobackURL" value="${gobackURL}"/>
 	</form>
-	--%>
+	

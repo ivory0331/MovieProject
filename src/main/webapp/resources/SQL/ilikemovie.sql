@@ -174,7 +174,7 @@ show user;
     commit;
     
     select *
-    from tbl_board_info;
+    from tbl_post;
     
     -- 게시판 테이블
     create table tbl_post
@@ -213,6 +213,23 @@ show user;
     where board_num = 2 and delt_status = 1
     order by post_seq desc;
     
+    select rno,post_seq, userid, nickname, title, view_cnt, write_date
+		from
+		    (
+		    select rownum as rno, post_seq, userid, nickname, title, view_cnt, write_date
+		    from
+		        (
+		        select post_seq, substr(userid, 1, 3) || lpad('*', length(userid)-3,'*') AS userid, nickname, title, view_cnt, to_char(write_date,'yyyy-mm-dd') as write_date
+		        from tbl_post
+		        where delt_status = 1 and  board_num = 2
+		        	<if test='searchWord != "" '>
+			         and ${searchType} like '%'|| #{searchWord} ||'%'
+			        </if>
+		        order by post_seq desc
+		        ) V
+		    ) T
+		where rno between #{startRno} and #{endRno}
+        
     select previousseq, previoussubject, post_seq, userid, nickname, title, content, view_cnt, write_date
 		      ,nextseq, nextsubject
 		from
@@ -284,4 +301,39 @@ show user;
     nocycle
     nocache;
     
-    
+    insert into tbl_attach_file(attach_seq, post_seq, file_name, org_file_name)
+    values()
+
+
+
+    select previousseq, previoussubject, free_seq, fk_userid, name, title, content, viewcount, writedate
+		      ,nextseq, nextsubject, orgFilename, fileName
+		from
+		(
+		 select lag(free_seq, 1) over(order by free_seq desc) as previousseq  
+				           , nvl(lag(title, 1) over(order by free_seq desc),'이전글이 없습니다')as previoussubject				           				           
+				           , free_seq, fk_userid, name, title, content, viewcount
+				           , to_char(writedate, 'yyyy-mm-dd hh24:mi:ss') as writedate				         
+				           , lead(free_seq, 1) over(order by free_seq desc) as nextseq
+				           , nvl(lead(title, 1) over(order by free_seq desc),'다음글이 없습니다.') as nextsubject
+		                   , orgFilename, fileName
+				      from free_board
+				      where status = 1
+		) V
+		where free_seq = #{free_seq}
+        
+        select previousseq, previoussubject, free_seq, fk_userid, name, title, content, viewcount, writedate
+		      ,nextseq, nextsubject, orgFilename, fileName
+		from
+		(
+		 select lag(free_seq, 1) over(order by free_seq desc) as previousseq  
+				           , nvl(lag(title, 1) over(order by free_seq desc),'이전글이 없습니다')as previoussubject				           				           
+				           , free_seq, fk_userid, name, title, content, viewcount
+				           , to_char(writedate, 'yyyy-mm-dd hh24:mi:ss') as writedate				         
+				           , lead(free_seq, 1) over(order by free_seq desc) as nextseq
+				           , nvl(lead(title, 1) over(order by free_seq desc),'다음글이 없습니다.') as nextsubject
+		                   , orgFilename, fileName
+				      from free_board
+				      where status = 1
+		) V
+		where free_seq = #{free_seq}
