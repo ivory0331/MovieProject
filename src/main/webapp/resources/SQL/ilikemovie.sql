@@ -271,6 +271,12 @@ show user;
     ,constraint FK_cmt_post_seq foreign key(post_seq) references tbl_post(post_seq) on delete cascade
     ,constraint CK_cmt_status check( delt_status in(1,0) )
     );
+    select *
+    from tbl_cmt
+    
+    update tbl_cmt set delt_status = 1
+    where cmt_seq = 4
+    commit;
     
     --  댓글 시퀀스
     create sequence cmt_seq

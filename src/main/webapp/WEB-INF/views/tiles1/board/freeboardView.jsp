@@ -106,12 +106,12 @@
 
    $(document).ready(function(){
       
-    //  goViewComment("1");
+   		goViewComment("1");
       
    })
 
    // 댓글쓰기
-  <%--  function goaddComment(){
+   function goaddComment(){
       var frm = document.addComment;
       var contentVal = frm.content.value.trim();
       if(contentVal ==""){
@@ -128,18 +128,18 @@
       }
       else{
          $.ajax({
-            url:"<%=ctxPath%>/board/addFreeComment.up",
+            url:"<%=ctxPath%>/addFreeComment.mv",
             data: form_data,
             type:"POST",
             dataType:"JSON",
             success:function(json){
                if(json.n == 1) {
+            	  alert("댓글쓰기 성공!");
                   goViewComment("1"); // 페이징처리 한 댓글 읽어오기 
                }
                else {
                   alert("댓글쓰기 실패!!");
                }
-               
                frm.content.value = "";         
             },
             error: function(request, status, error){
@@ -150,19 +150,16 @@
    }// end of function goaddComment() --------------------
    
    // 댓글 삭제하기
-   function goDelComment(delseq,name,loginname){
-      /* var delseq = delseq;
-      alert(delseq);
-       */
-       
+   function goDelComment(cmt_seq){
+   
        var delid = $("#delid").val();
-       var loginid = $("#loginid").val();
+       var loginid = "${sessionScope.loginuser.userid}";
        
        if(delid == loginid){
           if(confirm("정말 삭제하시겠습니까?") == true) {
              $.ajax({
-                  url:"<%=ctxPath%>/board/delFreeComment.up",
-                  data:{"delseq":delseq},
+                  url:"<%=ctxPath%>/delFreeComment.mv",
+                  data:{"cmt_seq":cmt_seq},
                   dataType:"JSON",
                   success:function(json){
                      alert("댓글이 삭제되었습니다.")
@@ -180,15 +177,15 @@
           alert("다른 사용자의 댓글은 삭제가 불가능합니다.");
        }
       
-      
       goViewComment("1");
+      
    }// end of goDelComment() ----------------------------------
-   
+
    // 댓글 내용 불러오기
     function goViewComment(currentShowPageNo) {
          $.ajax({
-            url:"<%= request.getContextPath()%>/board/commentList.up",
-            data:{"parentSeq":"${freeboardvo.free_seq}",
+            url:"<%= request.getContextPath()%>/commentList.mv",
+            data:{"post_seq":"${freeboardView.post_seq}",
                  "currentShowPageNo":currentShowPageNo},
             dataType:"JSON",
             success:function(json){
@@ -198,9 +195,9 @@
                      html += "<tr>";
                      html += "<td style='text-align: center;'>"+(index+1)+"</td>";
                      html += "<td>"+item.content+"</td>";
-                     html += "<td style='text-align: center;'>"+item.name+"</td>";
-                     html += "<td style='text-align: center;'>"+item.writedate+"<input type='hidden' id='delid' value='"+item.name+"'/></td>";
-                     html += "<td style='text-align: center;' onclick='goDelComment(\""+item.comment_seq+"\")'><span>삭제</span></td>";
+                     html += "<td style='text-align: center;'>"+item.nickname+"</td>";
+                     html += "<td style='text-align: center;'>"+item.write_date+"<input type='hidden' id='delid' value='"+item.userid+"'/></td>";
+                     html += "<td style='text-align: center;' onclick='goDelComment(\""+item.cmt_seq+"\")'><span style='cursor: pointer;'>삭제</span></td>";
                      html += "</tr>";
                   });
                }
@@ -224,8 +221,8 @@
    function makeCommentPageBar(currentShowPageNo){
          
       $.ajax({
-         url:"<%= request.getContextPath()%>/board/getFreeTotalPage.up",
-         data:{"parentSeq":"${freeboardvo.free_seq}",
+         url:"<%= request.getContextPath()%>/getTotalPage.mv",
+         data:{"post_seq":"${freeboardView.post_seq}",
               "sizePerPage":"5"},
          type:"GET",
          dataType:"JSON",
@@ -238,7 +235,7 @@
                
                var pageBarHTML = "<ul style='list-style:none;'>";
                
-               var blockSize = 10;
+               var blockSize = 3;
                 // blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수 이다.
                 
                var loop = 1;
@@ -249,11 +246,6 @@
                }
                
                var pageNo = Math.floor((currentShowPageNo - 1)/blockSize)* blockSize + 1;
-                           /*  (2-1)/10  1/10  ==> Math.floor(0.1) ==> 0
-                              (11-1)/10 10/10 ==> Math.floor(1) ==> 1
-                              (12-1)/10 11/10 ==> Math.floor(1.1) ==> 1 */
-               
-               
                   
                   // === [이전] 만들기 ===
                   if(pageNo != 1) {                                          
@@ -298,8 +290,16 @@
          
          
       }// end of makeCommentPageBar(currentShowPageNo) ------------------------
-   
-       --%>
+ 
+      
+      function deletePost(post_seq){
+    	  if(confirm("정말 삭제하시겠습니까?") == true){
+    		  location.href="<%=ctxPath%>/delfreeboard.mv?post_seq="+post_seq;
+    	  }
+    	  else {
+              alert("삭제 취소하였습니다.");
+          }
+      }
 </script>
 
 
@@ -326,44 +326,22 @@
          <br><br><br>
       </div>
    </div>
-
-<%--    <div id="addedFile">
-      <table>
-         <tr>
-            <th style="background-color: #e0e0e0; float: left; width: 200px;">첨부파일</th>
-            <td style="text-align: left;">
-               <c:if test="${not empty freeboardvo.orgFilename}">
-                  <a href="<%=request.getContextPath()%>/download.up?free_seq=${freeboardvo.free_seq}">${freeboardvo.orgFilename}</a>
-               </c:if>
-               
-               <c:if test="${empty freeboardvo.orgFilename}">
-                  첨부파일이 없습니다.
-               </c:if>
-               
-            </td>
-         </tr>
-      </table>
-   </div><br> --%>
    
    <div id="updownView" style="height: 40px;">
-      <span class="button" onclick="javascript:location.href='<%=ctxPath%>/board/editfreeboard.mv?post_seq=${freeboardView.post_seq}'">글수정</span>
-      <span class="button" onclick="javascript:location.href='<%=ctxPath%>/board/delfreeboard.mv?post_seq=${freeboardView.post_seq}'">글삭제</span>
+      <span class="button" onclick="javascript:location.href='<%=ctxPath%>/editfreeboard.mv?post_seq=${freeboardView.post_seq}'">글수정</span>
+      <span class="button" onclick="deletePost(${freeboardView.post_seq})">글삭제</span>
       <span class="button" onclick="javascript:location.href='<%=ctxPath%>/${gobackURL}'">목록</span>
    </div><br>
    
-   
-   
-   
- <%--   <div id="addReply">
+   <div id="addReply">
       <form name="addComment">
       <table style="margin: 0 auto;">                  
          <tr>      
-            <input type="hidden" name="fk_userid" value="${sessionScope.loginuser.userid}" id="loginuser" />
-            <input type="hidden" name="parentSeq" value="${freeboardvo.free_seq}" />
-            <input type="hidden" name="name" id="loginid" value="${sessionScope.loginuser.name}" />
-            <td>
-            <textarea rows="5" cols="110" style="height: 100px;" name="content"></textarea></td>
-            <td><span id="goReply" onclick="goaddComment()">댓글달기</span></td>   
+            <input type="hidden" name="userid" value="${sessionScope.loginuser.userid}" id="loginuser" />
+            <input type="hidden" name="post_seq" value="${freeboardView.post_seq}" />
+            <input type="hidden" name="nickname" id=nickname value="${sessionScope.loginuser.nickname}" />
+            <td><textarea rows="5" cols="110" style="height: 100px; width: 800px;" name="content"></textarea></td>
+            <td><span id="goReply" onclick="goaddComment()">댓글달기</span></td>
          </tr>      
       </table>
       </form>
@@ -375,7 +353,7 @@
    <table style="margin: 0 auto;">
       <thead>
       <tr>
-          <th style="width: 10%; text-align: center;">번호</th>
+         <th style="width: 10%; text-align: center;">번호</th>
          <th style="width: 50%; text-align: center;">내용</th>
          <th style="width: 10%; text-align: center; margin-left: 40px;">작성자</th>
          <th style="text-align: center;">작성일자</th>
@@ -386,12 +364,9 @@
       <tbody id="commentDisplay"></tbody>      
    </table>
    
-   댓글페이지바
    <div id="pageBar" style="width:800px; margin:25px auto; text-align:center;"></div>
-    --%>
-   
-   
-   
+
+
    <div id="updownView">
       <table>
       <%-- <c:if>로 윗글아랫글로 처리 --%>
@@ -406,9 +381,6 @@
          </tr>
       </table>
    </div><br>
-   
-   
-   
    
 </div>   
 </div>

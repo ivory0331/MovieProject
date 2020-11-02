@@ -18,6 +18,7 @@ public class postVO {
 	private String recommend;		// 추천수
 	private String update_date;		// 수정_일시 
 	private String update_userid;	// 수정_회원_아이디
+	private String originuser;      // 원래 아이디
 	
 	private String previousseq;      // 이전글번호
 	private String previoussubject;  // 이전글제목
@@ -34,7 +35,7 @@ public class postVO {
 
 	public postVO(String post_seq, String board_num, String userid, String mv_info_num, String nickname, String title,
 			String content, String view_cnt, String write_date, String delt_status, String secret, String recommend,
-			String update_date, String update_userid) {
+			String update_date, String update_userid, String originuser) {
 		super();
 		this.post_seq = post_seq;
 		this.board_num = board_num;
@@ -50,6 +51,7 @@ public class postVO {
 		this.recommend = recommend;
 		this.update_date = update_date;
 		this.update_userid = update_userid;
+		this.originuser = originuser;
 	}
 
 
@@ -239,6 +241,16 @@ public class postVO {
 	
 	public void setAttach(MultipartFile attach) {
 		this.attach = attach;
+	}
+
+
+	public String getOriginuser() {
+		return originuser;
+	}
+
+
+	public void setOriginuser(String originuser) {
+		this.originuser = originuser;
 	}
 	
 	

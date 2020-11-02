@@ -60,12 +60,12 @@
 	
 	<select id="getFreeboardView" parameterType="HashMap" resultType="com.spring.model.postVO">
 		select previousseq, previoussubject, post_seq, userid, nickname, title, content, view_cnt, write_date
-		      ,nextseq, nextsubject
+		      ,nextseq, nextsubject, originuser
 		from
 		(
 		 select lag(post_seq, 1) over(order by post_seq desc) as previousseq  
 				           , nvl(lag(title, 1) over(order by post_seq desc),'이전글이 없습니다')as previoussubject				           				           
-				           , post_seq, substr(userid, 1, 3) || lpad('*', length(userid)-3,'*') AS userid, userid AS originuser,nickname, title, content, view_cnt
+				           , post_seq, substr(userid, 1, 3) || lpad('*', length(userid)-3,'*') AS userid, userid AS originuser, nickname, title, content, view_cnt
 				           , to_char(write_date, 'yyyy-mm-dd hh24:mi:ss') as write_date				         
 				           , lead(post_seq, 1) over(order by post_seq desc) as nextseq
 				           , nvl(lead(title, 1) over(order by post_seq desc),'다음글이 없습니다.') as nextsubject
@@ -89,5 +89,44 @@
 		where post_seq = #{post_seq} and userid != #{userid}
 	</update>
 	
+	<update id="editfreeboard" parameterType="com.spring.model.postVO">
+		update tbl_post set title = #{title}
+						   ,content = #{content}
+						   ,write_date = sysdate
+		where post_seq = #{post_seq}
+	</update>
+	
+	<update id="delfreeboard" parameterType="String">
+		update tbl_post set delt_status = 0
+		where post_seq = #{post_seq}
+	</update>
+	
+	<insert id="addComment" parameterType="com.spring.model.cmtVO">
+		insert into tbl_cmt(cmt_seq, post_seq, userid, nickname, content, write_date, delt_status)
+		values(cmt_seq.nextval, #{post_seq}, #{userid}, #{nickname}, #{content}, default, default)
+	</insert>
+	
+	<select id="getCommentList" parameterType="HashMap" resultType="com.spring.model.cmtVO">
+		select cmt_seq, userid, nickname, content, write_date
+		from
+		(
+			select row_number() over(order by cmt_seq desc) as rno, cmt_seq, userid, nickname, content, to_char(write_date, 'yyyy-mm-dd hh24:mi:ss') as write_date
+			from tbl_cmt
+			where delt_status = 1 and post_seq = #{post_seq}
+			order by cmt_seq desc
+		) V
+		where rno between #{startRno} and #{endRno}
+	</select>
+	
+	<select id="getCommentTotalCount" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_cmt
+		where delt_status = 1 and post_seq = #{post_seq}
+	</select>
+	
+	<update id="delComment" parameterType="String">
+		update tbl_cmt set delt_status = 0
+		where cmt_seq = #{cmt_seq}
+	</update>
 	
 </mapper>

@@ -21,5 +21,17 @@ public interface InterMovieDAO {
 
 	void addViewCount(HashMap<String, String> paraMap); // 조회수 1 증가시키기
 
+	int editfreeboard(postVO postvo); // 글 수정하기(update)
+
+	int delfreeboard(String post_seq); // 글 삭제하기(update)
+
+	int addComment(cmtVO cmtvo); // 댓글작성하기
+
+	List<cmtVO> commentList(HashMap<String, String> paraMap); // 댓글 불러오기
+
+	int getCommentTotalCount(String post_seq); // 댓글 총 개수
+
+	int delComment(String cmt_seq); // 댓글 삭제하기
+
 	
 }

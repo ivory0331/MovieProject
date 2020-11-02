@@ -83,13 +83,48 @@ public class MovieService implements InterMovieService {
 		int freeTotalCount = dao.getFreeTotalCount(paraMap);
 		return freeTotalCount;
 	}
-	
 	// 자유게시판 상세보기+조회수
 	@Override
 	public postVO getFreeboardView_cnt(HashMap<String, String> paraMap) {
 		dao.addViewCount(paraMap);
 		postVO freeboardvo = dao.getFreeboardView(paraMap);
 		return freeboardvo;
+	}
+	// 글 수정하기(update)
+	@Override
+	public int editfreeboardEnd(postVO postvo) {
+		int n = dao.editfreeboard(postvo);
+		return n;
+	}
+	// 글 삭제하기(update)
+	@Override
+	public int delfreeboard(String post_seq) {
+		int n = dao.delfreeboard(post_seq);
+		return n;
+	}
+	// 댓글작성하기
+	@Override
+	public int addComment(cmtVO cmtvo) {
+		int n = dao.addComment(cmtvo);
+		return n;
+	}
+	// 댓글 불러오기
+	@Override
+	public List<cmtVO> commentList(HashMap<String, String> paraMap) {
+		List<cmtVO> commentList = dao.commentList(paraMap);
+		return commentList;
+	}
+	// 댓글 총 개수
+	@Override
+	public int getCommentTotalCount(String post_seq) {
+		int n = dao.getCommentTotalCount(post_seq);
+		return n;
+	}
+	// 댓글 삭제하기
+	@Override
+	public int delComment(String cmt_seq) {
+		int n = dao.delComment(cmt_seq);
+		return n;
 	}
 
 	

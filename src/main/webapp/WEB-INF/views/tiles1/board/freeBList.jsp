@@ -87,7 +87,7 @@
 				<c:if test="${not empty freeboardList}">
 				<c:forEach var="boardList" items="${freeboardList}" varStatus="status">
 					<tr>
-						<th scope="row">${boardList.post_seq}</th>
+						<th scope="row">${status.count}</th>
 						<td><span class="title" onclick="goView('${boardList.post_seq}')">${boardList.title}</span></td>
 						<td>${boardList.nickname} ( ${boardList.userid} )</td>
 						<td>${boardList.write_date}</td>

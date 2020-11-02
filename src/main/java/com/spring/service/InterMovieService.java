@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.spring.model.MemberVO;
 import com.spring.model.attachVO;
+import com.spring.model.cmtVO;
 import com.spring.model.postVO;
 
 public interface InterMovieService {
@@ -24,5 +25,17 @@ public interface InterMovieService {
 	int getFreeTotalCount(HashMap<String, String> paraMap); // 자유게시판 총 게시물 개수
 
 	postVO getFreeboardView_cnt(HashMap<String, String> paraMap); // 자유게시판 상세보기+조회수
+
+	int editfreeboardEnd(postVO postvo); // 글 수정하기(update)
+
+	int delfreeboard(String post_seq); // 글 삭제하기(update)
+
+	int addComment(cmtVO cmtvo); // 댓글작성하기
+
+	List<cmtVO> commentList(HashMap<String, String> paraMap); // 댓글 불러오기
+
+	int getCommentTotalCount(String post_seq); // 댓글 총 개수
+
+	int delComment(String cmt_seq); // 댓글 삭제하기
 
 }

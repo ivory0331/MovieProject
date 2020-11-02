@@ -407,7 +407,7 @@ public class MovieController {
 		
 		HttpSession session = request.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
-		String userid = null;
+		String userid = "a";
 		
 		if(loginuser != null)
 			userid = loginuser.getUserid();
@@ -434,6 +434,195 @@ public class MovieController {
 		return mav;
 	}
 	
+	// 자유게시판 글 수정하기 
+	@RequestMapping(value="/editfreeboard.mv")
+	public ModelAndView requiredLogin_editfreeboard(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		// 글 수정해야할 글번호 가져오기 
+		String post_seq = request.getParameter("post_seq");
+		
+		HashMap<String, String> paraMap = new HashMap<>();
+		paraMap.put("post_seq", post_seq);
+		
+		postVO freeboardvo = service.getFreeboardView(paraMap);
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		
+		if( !loginuser.getUserid().equals(freeboardvo.getOriginuser()) ) {
+			String msg = "다른 사용자의 글은 수정이 불가합니다.";
+			String loc = "javascript:history.back()";
+			
+			mav.addObject("msg", msg);
+			mav.addObject("loc", loc);
+			mav.setViewName("msg");			
+		}
+		else {
+			mav.addObject("freeboardvo", freeboardvo);
+			mav.setViewName("board/editfreeboard.tiles1");				
+		}			
+		return mav;
+	}
+	
+	// 자유게시판 글 수정하기 완료하기
+	@RequestMapping(value="/editfreeboardEnd.mv", method= {RequestMethod.POST})
+	public ModelAndView editfreeboardEnd(HttpServletRequest request, postVO postvo, ModelAndView mav) {
+		
+		String post_seq = request.getParameter("post_seq");
+		int n = service.editfreeboardEnd(postvo); // 글 수정하기(update)
+		
+		if(n == 0) {
+			mav.addObject("msg", "글 수정에 실패 했습니다 :(");
+		}
+		else {
+			mav.addObject("msg", "글수정 성공!!");
+		}
+		
+		mav.addObject("loc", request.getContextPath()+"/freeboardView.mv?post_seq="+post_seq);
+		mav.setViewName("msg");
+		
+		return mav;
+	}
+	
+	// 자유게시판 글 삭제하기
+	@RequestMapping(value="/delfreeboard.mv")
+	public ModelAndView requiredLogin_delfreeboard(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		// 삭제해야할 글번호를 받아온다.
+		String post_seq = request.getParameter("post_seq");
+		
+		HashMap<String, String> paraMap = new HashMap<>();
+		paraMap.put("post_seq", post_seq);
+		
+		postVO freeboardvo = service.getFreeboardView(paraMap);
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		
+		if( !loginuser.getUserid().equals(freeboardvo.getOriginuser()) ) {
+			String msg = "다른 사용자의 글은 삭제가 불가합니다.";
+			String loc = "javascript:history.back()";
+			
+			mav.addObject("msg", msg);
+			mav.addObject("loc", loc);		
+		}
+		else {
+			int n = service.delfreeboard(post_seq); // 글 삭제하기(update)
+			
+			if(n == 0) {
+				mav.addObject("msg", "글 삭제에 실패했습니다 :<");
+				mav.addObject("loc", request.getContextPath()+"/freeboardview.mv?post_seq="+post_seq);
+			}
+			else {
+				mav.addObject("msg", "글삭제 성공!!");
+				mav.addObject("loc", request.getContextPath()+"/freeBoardList.mv"); 
+			}		
+		}
+		mav.setViewName("msg");	
+		
+		return mav;
+	}
+	
+	// 자유게시판 댓글쓰기
+	@ResponseBody
+	@RequestMapping(value="/addFreeComment.mv", method= {RequestMethod.POST})
+	public String addFreeComment(HashMap<String, String> paraMap, cmtVO cmtvo) {
+		
+		String jsonStr = "";
+		
+		try {
+			int n = service.addComment(cmtvo);
+			
+			JSONObject jsonObj = new JSONObject();
+			jsonObj.put("n", n);
+			
+			jsonStr = jsonObj.toString();
+			
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}						
+		
+		return jsonStr;
+	}
+	
+	// 자유게시판 댓글 불러오기
+	@ResponseBody
+	@RequestMapping(value="/commentList.mv",  produces="text/plain;charset=UTF-8")
+	public String commentList(HttpServletRequest request) {
+		
+		String post_seq = request.getParameter("post_seq");
+		String currentShowPageNo = request.getParameter("currentShowPageNo");
+		
+		if(currentShowPageNo == null) {
+			   currentShowPageNo = "1";
+		   }
+		   
+		int sizePerPage = 5;
+		
+		int startRno = ((Integer.parseInt(currentShowPageNo) - 1 ) * sizePerPage) + 1;
+	    int endRno = startRno + sizePerPage - 1; 
+		
+	    HashMap<String,String> paraMap = new HashMap<>();
+	    paraMap.put("post_seq", post_seq);   
+	    paraMap.put("startRno", String.valueOf(startRno));
+	    paraMap.put("endRno", String.valueOf(endRno));
+	      
+		List<cmtVO> commentList = service.commentList(paraMap); // 댓글 불러오기
+		
+		JSONArray jsonArr = new JSONArray();
+		
+		if(commentList != null) {
+			for(cmtVO cvo : commentList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("content", cvo.getContent());
+				jsonObj.put("nickname", cvo.getNickname());
+				jsonObj.put("write_date", cvo.getWrite_date());
+				jsonObj.put("cmt_seq", cvo.getCmt_seq());
+				jsonObj.put("userid", cvo.getUserid());
+				
+				jsonArr.put(jsonObj);								
+			}			
+		}
+
+		return jsonArr.toString();
+	}
+	
+	// 자유게시판 댓글 페이징처리
+	 @ResponseBody
+	 @RequestMapping(value="/getTotalPage.mv")
+	 public String getcommenTotalPage(HttpServletRequest request) {
+		   
+		  String post_seq = request.getParameter("post_seq");
+		  String sizePerPage = request.getParameter("sizePerPage");
+
+		  // 원글 글번호(parentSeq)에 해당하는 댓글의 총갯수를 알아오기
+		  int totalCount = service.getCommentTotalCount(post_seq); // 댓글 총 개수
+		    
+		  // 총페이지수(totalPage) 구하기
+		  int totalPage = (int) Math.ceil ( (double)totalCount/Integer.parseInt(sizePerPage));
+		  // ex) (double)23/5 ==> 4.6 ==> Math.ceil(4.6) ==> (int)4.0 ==> 4
+		     
+		  JSONObject jsonObj = new JSONObject();
+		  jsonObj.put("totalPage", totalPage);
+		   
+		  return jsonObj.toString();
+	   }
+	
+	// 자유게시판 댓글 삭제하기
+	@ResponseBody
+	@RequestMapping(value="/delFreeComment.mv")
+	public String delFreeComment(HttpServletRequest request) {
+		
+		String cmt_seq =request.getParameter("cmt_seq");
+		
+		int n = service.delComment(cmt_seq); // 댓글 삭제하기
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		   
+		return jsonObj.toString();
+	}
+	 
 	// 공지사항 페이지
 	@RequestMapping(value="/noticeList.mv")
 	public ModelAndView noticeList(ModelAndView mav) {

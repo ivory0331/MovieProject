@@ -62,6 +62,42 @@ public class MovieDAO implements InterMovieDAO {
 	public void addViewCount(HashMap<String, String> paraMap) {
 		sqlsession.update("movie.addViewCnt", paraMap);
 	}
+	// 글 수정하기(update)
+	@Override
+	public int editfreeboard(postVO postvo) {
+		int n = sqlsession.update("movie.editfreeboard", postvo);
+		return n;
+	}
+	// 글 삭제하기(update)
+	@Override
+	public int delfreeboard(String post_seq) {
+		int n = sqlsession.update("movie.delfreeboard", post_seq);
+		return n;
+	}
+	// 댓글작성하기
+	@Override
+	public int addComment(cmtVO cmtvo) {
+		int n = sqlsession.insert("movie.addComment", cmtvo);
+		return n;
+	}
+	// 댓글 불러오기
+	@Override
+	public List<cmtVO> commentList(HashMap<String, String> paraMap) {
+		List<cmtVO> commentList = sqlsession.selectList("movie.getCommentList", paraMap);
+		return commentList;
+	}
+	// 댓글 총 개수
+	@Override
+	public int getCommentTotalCount(String post_seq) {
+		int n = sqlsession.selectOne("movie.getCommentTotalCount", post_seq);
+		return n;
+	}
+	// 댓글 삭제하기
+	@Override
+	public int delComment(String cmt_seq) {
+		int n = sqlsession.update("movie.delComment", cmt_seq);
+		return n;
+	}
 	
 	
 }
